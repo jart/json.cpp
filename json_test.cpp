@@ -101,7 +101,7 @@ struct timespec
 now(void)
 {
     struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    timespec_get(&ts, TIME_UTC);
     return ts;
 }
 

@@ -881,7 +881,15 @@ Json::parse(Json& json, const char*& p, const char* e, int context, int depth)
                 json.setLong(0);
                 return success;
 
-            case '1' ... '9': // integer
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9': // integer
                 if (context & (COLON | COMMA | KEY))
                     goto OnColonCommaKey;
                 for (x = (c - '0') * d; p < e; ++p) {

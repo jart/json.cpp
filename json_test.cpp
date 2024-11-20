@@ -17,9 +17,10 @@
 
 #include "json.h"
 
+#include <atomic>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
-#include <time.h>
 
 #define ARRAYLEN(A) \
     ((sizeof(A) / sizeof(*(A))) / ((unsigned)!(sizeof(A) % sizeof(*(A)))))
@@ -89,41 +90,18 @@ static const char kHuge[] = R"([
 
 #define BENCH(ITERATIONS, WORK_PER_RUN, CODE) \
     do { \
-        struct timespec start = now(); \
+        auto start = std::chrono::high_resolution_clock::now(); \
         for (int __i = 0; __i < ITERATIONS; ++__i) { \
-            asm volatile("" ::: "memory"); \
+            std::atomic_signal_fence(std::memory_order_acq_rel); \
             CODE; \
         } \
+        auto end = std::chrono::high_resolution_clock::now(); \
+        auto duration = \
+          std::chrono::duration_cast<std::chrono::nanoseconds>(end - start); \
         long long work = (WORK_PER_RUN) * (ITERATIONS); \
-        double nanos = (tonanos(tub(now(), start)) + work - 1) / (double)work; \
+        double nanos = (duration.count() + work - 1) / (double)work; \
         printf("%10g ns %2dx %s\n", nanos, (ITERATIONS), #CODE); \
     } while (0)
-
-struct timespec
-now(void)
-{
-    struct timespec ts;
-    timespec_get(&ts, TIME_UTC);
-    return ts;
-}
-
-struct timespec
-tub(struct timespec a, struct timespec b)
-{
-    a.tv_sec -= b.tv_sec;
-    if (a.tv_nsec < b.tv_nsec) {
-        a.tv_nsec += 1000000000;
-        a.tv_sec--;
-    }
-    a.tv_nsec -= b.tv_nsec;
-    return a;
-}
-
-int64_t
-tonanos(struct timespec x)
-{
-    return x.tv_sec * 1000000000ull + x.tv_nsec;
-}
 
 void
 object_test()

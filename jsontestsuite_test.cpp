@@ -19,7 +19,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <unistd.h>
 
 #define HI_RESET "\033[0m" // green
 #define HI_GOOD "\033[32m" // green
@@ -27,6 +26,11 @@
 #define HI_OK "\033[33m" // yellow
 
 using jt::Json;
+
+#include "json.h"
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 static const char* const kParsingTests[] = {
     "i_number_double_huge_neg_exp.json",
@@ -349,6 +353,23 @@ static const char* const kParsingTests[] = {
     "y_structure_whitespace_array.json",
 };
 
+const char*
+get_test_path()
+{
+    FILE* f = fopen("JSONTestSuite/test_parsing/y_array_empty.json", "rb");
+    if (f) {
+        fclose(f);
+        return "JSONTestSuite/test_parsing/";
+    }
+    f = fopen("../JSONTestSuite/test_parsing/y_array_empty.json", "rb");
+    if (f) {
+        fclose(f);
+        return "../JSONTestSuite/test_parsing/";
+    }
+    fprintf(stderr, "Could not find JSONTestSuite directory\n");
+    exit(1);
+}
+
 std::string
 slurp(const char* path)
 {
@@ -369,9 +390,10 @@ int
 main()
 {
     int failures = 0;
+    std::string base_path = get_test_path();
     int n = sizeof(kParsingTests) / sizeof(*kParsingTests);
     for (int i = 0; i < n; ++i) {
-        std::string path = "JSONTestSuite/test_parsing/";
+        std::string path = base_path;
         path += kParsingTests[i];
         std::pair<Json::Status, Json> result = Json::parse(slurp(path.c_str()));
         const char* color = "";

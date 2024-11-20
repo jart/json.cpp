@@ -196,7 +196,7 @@ Bsr(int x)
 static double
 StringToDouble(const char* s, size_t n, int* out_processed)
 {
-    if (n == -1ull)
+    if (n == (size_t)-1)
         n = strlen(s);
     int processed;
     double res = kJsonToDouble.StringToDouble(s, n, &processed);
@@ -230,7 +230,7 @@ static char*
 LongToString(char* p, long long x)
 {
     if (x < 0)
-        *p++ = '-', x = -(unsigned long long)x;
+        *p++ = '-', x = 0 - (unsigned long long)x;
     return UlongToString(p, x);
 }
 

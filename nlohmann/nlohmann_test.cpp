@@ -19,7 +19,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <unistd.h>
 
 #define HI_RESET "\033[0m" // green
 #define HI_GOOD "\033[32m" // green

@@ -7,11 +7,51 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-native:
+    # This job runs on x86_64 directly
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: make check
       run: make check
+
+  build-other-arch:
+    # This job runs on other architectures via qemu
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        arch: [aarch64, ppc64le, s390x]
+        include:
+          - arch: aarch64
+            distro: ubuntu22.04
+            platform-name: linux/arm64
+          - arch: ppc64le
+            distro: ubuntu22.04
+            platform-name: linux/ppc64le
+          - arch: s390x
+            distro: ubuntu22.04
+            platform-name: linux/s390x
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: ${{ matrix.platform-name }}
+
+    - name: Build on ${{ matrix.arch }}
+      uses: uraimo/run-on-arch-action@v2
+      with:
+        arch: ${{ matrix.arch }}
+        distro: ${{ matrix.distro }}
+        githubToken: ${{ github.token }}
+
+        install: |
+          apt-get update
+          apt-get install -y make gcc g++
+
+        run: |
+          make check

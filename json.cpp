@@ -76,6 +76,12 @@
           (unsigned)((((wc) - 0x10000) & 1023) + 0xDC00) << 16) \
        : 0xFFFD)
 
+#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+#define ON_LOGIC_ERROR(s) throw std::logic_error(s)
+#else
+#define ON_LOGIC_ERROR(s) abort()
+#endif
+
 namespace jt {
 
 static const char kJsonStr[256] = {
@@ -323,7 +329,7 @@ Json::Json(const Json& other) : type_(other.type_)
             new (&object_value) std::map<std::string, Json>(other.object_value);
             break;
         default:
-            abort();
+            ON_LOGIC_ERROR("Unhandled JSON type.");
     }
 }
 
@@ -360,7 +366,7 @@ Json::operator=(const Json& other)
                   std::map<std::string, Json>(other.object_value);
                 break;
             default:
-                abort();
+                ON_LOGIC_ERROR("Unhandled JSON type.");
         }
     }
     return *this;
@@ -394,7 +400,7 @@ Json::Json(Json&& other) noexcept : type_(other.type_)
               std::map<std::string, Json>(std::move(other.object_value));
             break;
         default:
-            abort();
+            ON_LOGIC_ERROR("Unhandled JSON type.");;
     }
     other.type_ = Null;
 }
@@ -433,7 +439,7 @@ Json::operator=(Json&& other) noexcept
                   std::map<std::string, Json>(std::move(other.object_value));
                 break;
             default:
-                abort();
+                ON_LOGIC_ERROR("Unhandled JSON type.");;
         }
         other.type_ = Null;
     }
@@ -451,7 +457,7 @@ Json::getNumber() const
         case Double:
             return double_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a number.");
     }
 }
 
@@ -462,7 +468,7 @@ Json::getLong() const
         case Long:
             return long_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a long.");
     }
 }
 
@@ -473,7 +479,7 @@ Json::getBool() const
         case Bool:
             return bool_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a bool.");
     }
 }
 
@@ -486,7 +492,7 @@ Json::getFloat() const
         case Double:
             return double_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a floating-point number.");
     }
 }
 
@@ -499,7 +505,7 @@ Json::getDouble() const
         case Double:
             return double_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a floating-point number.");
     }
 }
 
@@ -510,7 +516,7 @@ Json::getString()
         case String:
             return string_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not a string.");
     }
 }
 
@@ -521,7 +527,7 @@ Json::getArray()
         case Array:
             return array_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not an array.");
     }
 }
 
@@ -532,7 +538,7 @@ Json::getObject()
         case Object:
             return object_value;
         default:
-            abort();
+            ON_LOGIC_ERROR("JSON value is not an object.");
     }
 }
 
@@ -680,7 +686,7 @@ Json::marshal(std::string& b, bool pretty, int indent) const
             break;
         }
         default:
-            abort();
+            ON_LOGIC_ERROR("Unhandled JSON type.");
     }
 }
 
@@ -756,7 +762,7 @@ Json::serialize(std::string& sb, const std::string& s)
                 } while ((w >>= 16));
                 break;
             default:
-                abort();
+                ON_LOGIC_ERROR("Unhandled character escape code during string serialization.");
         }
     }
 }
@@ -1203,7 +1209,7 @@ Json::parse(Json& json, const char*& p, const char* e, int context, int depth)
                         case C1:
                             return c1_control_code_in_string;
                         default:
-                            abort();
+                            ON_LOGIC_ERROR("Unhandled character category during string parsing.");
                     }
                 }
             }
@@ -1302,7 +1308,7 @@ Json::StatusToString(Json::Status status)
         case non_del_c0_control_code_in_string:
             return "non_del_c0_control_code_in_string";
         default:
-            abort();
+            ON_LOGIC_ERROR("Unhandled Json status value.");
     }
 }
 

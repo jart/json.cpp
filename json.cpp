@@ -23,6 +23,7 @@
 #include <climits>
 #include <cstdint>
 #include <cstdlib>
+#include <stdexcept>
 
 #include "double-conversion/double-to-string.h"
 #include "double-conversion/string-to-double.h"

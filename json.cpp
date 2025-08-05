@@ -373,7 +373,7 @@ Json::operator=(const Json& other)
     return *this;
 }
 
-Json::Json(Json&& other) noexcept : type_(other.type_)
+Json::Json(Json&& other) : type_(other.type_)
 {
     switch (type_) {
         case Null:
@@ -401,13 +401,13 @@ Json::Json(Json&& other) noexcept : type_(other.type_)
               std::map<std::string, Json>(std::move(other.object_value));
             break;
         default:
-            ON_LOGIC_ERROR("Unhandled JSON type.");;
+            ON_LOGIC_ERROR("Unhandled JSON type.");
     }
     other.type_ = Null;
 }
 
 Json&
-Json::operator=(Json&& other) noexcept
+Json::operator=(Json&& other)
 {
     if (this != &other) {
         if (type_ >= String)

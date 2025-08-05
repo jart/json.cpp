@@ -92,7 +92,7 @@ class Json
     static std::pair<Status, Json> parse(const std::string&);
 
     Json(const Json&);
-    Json(Json&&) noexcept;
+    Json(Json&&);
     Json(unsigned long);
     Json(unsigned long long);
     Json(const char*);
@@ -203,7 +203,7 @@ class Json
     std::string toStringPretty() const;
 
     Json& operator=(const Json&);
-    Json& operator=(Json&&) noexcept;
+    Json& operator=(Json&&);
 
     Json& operator[](size_t);
     Json& operator[](const std::string&);

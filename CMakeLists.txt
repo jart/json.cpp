@@ -38,7 +38,7 @@ if (JSON_CPP_BUILD_TESTS)
     add_custom_command(
         TARGET jsontestsuite_test POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/JSONTestSuite
+            ${CMAKE_CURRENT_SOURCE_DIR}/JSONTestSuite
             ${CMAKE_CURRENT_BINARY_DIR}/JSONTestSuite
     )
 

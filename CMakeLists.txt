@@ -22,6 +22,7 @@ add_library(json STATIC
     json.cpp
 )
 target_link_libraries(json PRIVATE double-conversion)
+set_target_properties(json PROPERTIES PUBLIC_HEADER "json.h")
 
 # Tests
 add_executable(json_test json_test.cpp)
@@ -44,4 +45,11 @@ add_test(
     NAME jsontestsuite_test 
     COMMAND jsontestsuite_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+install(TARGETS json double-conversion
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include
 )

@@ -45,3 +45,9 @@ add_test(
     COMMAND jsontestsuite_test
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+install(TARGETS json
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)

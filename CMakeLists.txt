@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(jtjson)
 
+option(JSON_CPP_BUILD_TESTS "Enable building tests" ON)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -25,27 +27,30 @@ target_link_libraries(json PRIVATE double-conversion)
 set_target_properties(json PROPERTIES PUBLIC_HEADER "json.h")
 
 # Tests
-add_executable(json_test json_test.cpp)
-target_link_libraries(json_test PRIVATE json)
+if (JSON_CPP_BUILD_TESTS)
+    add_executable(json_test json_test.cpp)
+    target_link_libraries(json_test PRIVATE json)
 
-add_executable(jsontestsuite_test jsontestsuite_test.cpp)
-target_link_libraries(jsontestsuite_test PRIVATE json)
+    add_executable(jsontestsuite_test jsontestsuite_test.cpp)
+    target_link_libraries(jsontestsuite_test PRIVATE json)
 
-# Copy test data to build directory
-add_custom_command(
-    TARGET jsontestsuite_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/JSONTestSuite
-        ${CMAKE_CURRENT_BINARY_DIR}/JSONTestSuite
-)
+    # Copy test data to build directory
+    add_custom_command(
+        TARGET jsontestsuite_test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/JSONTestSuite
+            ${CMAKE_CURRENT_BINARY_DIR}/JSONTestSuite
+    )
 
 enable_testing()
-add_test(NAME json_test COMMAND json_test)
-add_test(
-    NAME jsontestsuite_test 
-    COMMAND jsontestsuite_test
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+    enable_testing()
+    add_test(NAME json_test COMMAND json_test)
+    add_test(
+        NAME jsontestsuite_test
+        COMMAND jsontestsuite_test
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+endif()
 
 install(TARGETS json double-conversion
     ARCHIVE DESTINATION lib

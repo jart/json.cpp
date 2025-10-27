@@ -88,8 +88,8 @@ install(TARGETS json
 )
 
 # pkg-config
-#  * <prefix>/lib/pkgconfig/double-conversion.pc
+#  * <prefix>/lib/pkgconfig/json.cpp.pc
 install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/double-conversion.pc"
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/json.cpp.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )

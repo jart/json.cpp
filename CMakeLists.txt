@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
-project(jtjson)
+project(jtjson
+   LANGUAGES CXX
+   VERSION 0.1.0
+   DESCRIPTION "JSON for Classic C++")
 
 option(JSON_CPP_BUILD_TESTS "Enable building tests" ON)
 option(DOUBLE_CONVERSION_VENDORED "Use vendored double-conversion library" ON)
@@ -59,10 +62,34 @@ enable_testing()
     )
 endif()
 
+function(prefix_rel_path var_name install_dir)
+    if(IS_ABSOLUTE "${install_dir}")
+        set(${var_name} "${install_dir}" PARENT_SCOPE)
+    else()
+        set(${var_name} "\${prefix}/${install_dir}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Generate pkg-config file
+prefix_rel_path(PKG_CONFIG_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+prefix_rel_path(PKG_CONFIG_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
+configure_file(
+  "json.cpp.pc.in"
+  "json.cpp.pc"
+  @ONLY
+  )
+
 include(GNUInstallDirs)
 install(TARGETS json
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# pkg-config
+#  * <prefix>/lib/pkgconfig/json.cpp.pc
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/json.cpp.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )

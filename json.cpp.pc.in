@@ -4,6 +4,7 @@ includedir=@PKG_CONFIG_INCLUDEDIR@
 
 Name: json.cpp
 Description: @CMAKE_PROJECT_DESCRIPTION@
+Version: @PROJECT_VERSION@
 Libs: -L${libdir} -ljson
 Cflags: -I${includedir}
 Requires.private: double-conversion

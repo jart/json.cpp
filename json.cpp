@@ -521,6 +521,17 @@ Json::getString()
     }
 }
 
+const std::string&
+Json::getString() const
+{
+    switch (type_) {
+        case String:
+            return string_value;
+        default:
+            ON_LOGIC_ERROR("JSON value is not a string.");
+    }
+}
+
 std::vector<Json>&
 Json::getArray()
 {
@@ -532,8 +543,30 @@ Json::getArray()
     }
 }
 
+const std::vector<Json>&
+Json::getArray() const
+{
+    switch (type_) {
+        case Array:
+            return array_value;
+        default:
+            ON_LOGIC_ERROR("JSON value is not an array.");
+    }
+}
+
 std::map<std::string, Json>&
 Json::getObject()
+{
+    switch (type_) {
+        case Object:
+            return object_value;
+        default:
+            ON_LOGIC_ERROR("JSON value is not an object.");
+    }
+}
+
+const std::map<std::string, Json>&
+Json::getObject() const
 {
     switch (type_) {
         case Object:
@@ -580,12 +613,34 @@ Json::operator[](size_t index)
     return array_value[index];
 }
 
+const Json&
+Json::operator[](size_t index) const
+{
+    if (!isArray())
+        ON_LOGIC_ERROR("JSON value is not an array.");
+    if (index >= array_value.size()) {
+        ON_LOGIC_ERROR("JSON index not in array.");
+    }
+    return array_value[index];
+}
+
 Json&
 Json::operator[](const std::string& key)
 {
     if (!isObject())
         setObject();
     return object_value[key];
+}
+
+const Json&
+Json::operator[](const std::string& key) const
+{
+    if (!isObject())
+        ON_LOGIC_ERROR("JSON value is not an object.");
+    auto it = object_value.find(key);
+    if (it == object_value.end())
+        ON_LOGIC_ERROR("JSON object does not contain key.");
+    return it->second;
 }
 
 std::string
